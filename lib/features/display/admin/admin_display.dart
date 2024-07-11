@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:hospital/config/constants/encryption_data.dart';
+import 'package:hospital/config/encryption_data.dart';
 import 'package:hospital/config/routes/app_route.dart';
 import 'package:hospital/config/themes/theme_constants.dart';
 
