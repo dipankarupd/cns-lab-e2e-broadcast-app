@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hospital/config/routes/app_route.dart';
 import 'package:hospital/config/themes/theme_constants.dart';
+import 'package:hospital/features/auth/login/admin_login.dart';
 import 'package:hospital/features/auth/login/login_page.dart';
 import 'package:hospital/features/auth/register/signup_page.dart';
 import 'package:hospital/features/display/admin/admin_display.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         AppRoute.signup :(context) => const SignupPage(),
         AppRoute.admin_home: (context) => const AdminDisplay(),
         AppRoute.user_home: (context) => const UserDisplay(),
+        AppRoute.admin_login: (context) => const AdminLogin(),
         
       },
     );

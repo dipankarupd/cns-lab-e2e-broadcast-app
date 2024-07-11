@@ -6,7 +6,9 @@ class AppRoute {
 
   // admin
   static String admin_home = "/adminHome";
+  static String admin_login = "/adminLogin";
 
   // user
   static String user_home = "/userHome";
+
 }
