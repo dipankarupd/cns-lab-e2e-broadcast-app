@@ -147,7 +147,7 @@ class _LoginPageState extends State<LoginPage> {
 
                     Center(
                         child: GestureDetector(
-                      onTap: () => Navigator.pushReplacementNamed(
+                      onTap: () => Navigator.pushNamed(
                           context, AppRoute.admin_login),
                       child: const Text(
                         "Continue as Admin?",

@@ -1,11 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hospital/config/constants/encryption_data.dart';
+import 'package:hospital/config/encryption_data.dart';
 import 'package:hospital/config/routes/app_route.dart';
 import 'user_card.dart';
 import 'package:hospital/config/themes/theme_constants.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
 
 class UserDisplay extends StatefulWidget {
   const UserDisplay({Key? key}) : super(key: key);
