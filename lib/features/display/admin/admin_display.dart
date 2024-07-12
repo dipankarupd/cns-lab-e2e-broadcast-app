@@ -41,6 +41,19 @@ class _AdminDisplayState extends State<AdminDisplay> {
     }
 
     print("Message broadcasted successfully");
+
+    // show a snackbar text for success and reload this page
+
+    // Show a Snackbar for success
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Message broadcasted successfully'),
+      ),
+    );
+
+    // Clear the text field
+    _controller.clear();
+
   }
 
   @override

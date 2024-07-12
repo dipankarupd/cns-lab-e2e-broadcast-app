@@ -7,9 +7,6 @@ import 'package:hospital/features/auth/login/login_page.dart';
 import 'package:hospital/features/auth/register/signup_page.dart';
 import 'package:hospital/features/display/admin/admin_display.dart';
 import 'package:hospital/features/display/user/user_display.dart';
-// import 'package:hospital/features/display/doctor/home.dart';
-// import 'package:hospital/features/display/patient/booking.dart';
-// import 'package:hospital/features/display/patient/home.dart';
 import 'package:hospital/firebase_options.dart';
 
 
