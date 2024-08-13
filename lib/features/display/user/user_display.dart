@@ -32,22 +32,37 @@ class _UserDisplayState extends State<UserDisplay> {
       final users = await FirebaseFirestore.instance.collection('users').get();
 
       List<Map<String, dynamic>> allMessages = [];
+      Set<String> uniqueMessages = Set<String>(); // Track unique decrypted messages
+
       for (var user in users.docs) {
         final messages = await FirebaseFirestore.instance
             .collection('users')
             .doc(user.id)
             .collection('messages')
             .get();
-        print(messages);
+
         for (var message in messages.docs) {
           final encryptedMessage = message.data()['message'];
           final decryptedMessage = _decryptMessage(encryptedMessage);
           final createdAt =
               (message.data()['created_at'] as Timestamp).toDate();
-          allMessages.add({
-            'decryptedMessage': decryptedMessage,
-            'createdAt': createdAt,
-          });
+
+          // Only add message if it's unique or more recent
+          if (uniqueMessages.add(decryptedMessage)) {
+            allMessages.add({
+              'decryptedMessage': decryptedMessage,
+              'createdAt': createdAt,
+            });
+          } else {
+            // Replace the existing message if the current one is more recent
+            for (var i = 0; i < allMessages.length; i++) {
+              if (allMessages[i]['decryptedMessage'] == decryptedMessage &&
+                  allMessages[i]['createdAt'].isBefore(createdAt)) {
+                allMessages[i]['createdAt'] = createdAt;
+                break;
+              }
+            }
+          }
         }
       }
 
@@ -59,10 +74,10 @@ class _UserDisplayState extends State<UserDisplay> {
         _isLoading = false;
       });
     } catch (e) {
-      print('Error fetching messages: $e');
       setState(() {
         _isLoading = false;
       });
+      _showSnackBar('Error fetching messages: $e');
     }
   }
 
@@ -70,7 +85,7 @@ class _UserDisplayState extends State<UserDisplay> {
     try {
       return AESEncryption.decrypt(encryptedMessage);
     } catch (e) {
-      print('Error decrypting message: $e');
+      _showSnackBar('Error decrypting message: $e');
       return 'Error: Failed to decrypt message';
     }
   }
@@ -84,52 +99,61 @@ class _UserDisplayState extends State<UserDisplay> {
     Navigator.pushReplacementNamed(context, AppRoute.initial); // Redirect to login screen after logout
   }
 
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: _isLoading
-            ? Center(child: CircularProgressIndicator())
-            : RefreshIndicator(
-                onRefresh: _handleRefresh,
-                child: ListView(
-                  padding: EdgeInsets.fromLTRB(24, 75, 24, 0),
-                  children: [
-                    const Text(
-                      "Hello User ",
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: _handleRefresh,
+              child: ListView(
+                padding: EdgeInsets.fromLTRB(24, 75, 24, 0),
+                children: [
+                  const Text(
+                    "Hello User ",
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w400,
+                      color: colorSecondary,
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Center(
+                    child: Text(
+                      "Community posts...",
                       style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.w400,
-                        color: colorSecondary,
+                        color: colorPrimary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
                       ),
                     ),
-                    SizedBox(height: 16),
-                    Center(
-                      child: Text(
-                        "Community posts...",
-                        style: TextStyle(
-                          color: colorPrimary,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    Column(
-                      children: _messages.map((msg) {
-                        return UserCard(
-                          decryptedMessage: msg['decryptedMessage'],
-                          createdAt: msg['createdAt'],
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 16),
+                  Column(
+                    children: _messages.map((msg) {
+                      return UserCard(
+                        decryptedMessage: msg['decryptedMessage'],
+                        createdAt: msg['createdAt'],
+                      );
+                    }).toList(),
+                  ),
+                ],
               ),
-              floatingActionButton: FloatingActionButton(
-                onPressed: _logout,
-                child: Icon(Icons.logout),
-                tooltip: 'Logout',
-              )
-            );
+            ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _logout,
+        child: Icon(Icons.logout),
+        tooltip: 'Logout',
+      ),
+    );
   }
 }
